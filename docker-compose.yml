@@ -1,0 +1,38 @@
+version: "2"
+services:
+
+  #server:
+  proxy:
+    image: 'jwilder/nginx-proxy'
+    ports:
+      - "80:80"
+    volumes:
+      - '/var/run/docker.sock:/tmp/docker.sock:ro'
+
+  client:
+    restart: always
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    container_name: client
+    command: ng serve --host 0.0.0.0 --port=80 --public-host=localhost
+    environment:
+      - VIRTUAL_HOST=localhost
+    volumes:
+      - ./client:/app
+    ports:
+      - 4200:80
+
+  admin:
+    restart: always
+    build:
+      context: .
+      dockerfile: admin/Dockerfile
+    container_name: admin
+    command: ng serve --host 0.0.0.0 --port=80 --public-host=admin.localhost
+    environment:
+      - VIRTUAL_HOST=admin.localhost
+    volumes:
+      - ./admin:/app
+    ports:
+      - 4201:80
